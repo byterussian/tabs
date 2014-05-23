@@ -63,18 +63,12 @@ module Tabs
       def update_values(stat_key, value)
         hash = get_current_hash(stat_key)
         increment(hash, value)
-        update_min(hash, value)
-        update_max(hash, value)
-        update_avg(hash)
         set(stat_key, JSON.generate(hash))
       end
 
       def delete_values(stat_key, value)
         hash = get_current_hash(stat_key)
         decrement(hash, value)
-        #update_min(hash, value)
-        #update_max(hash, value)
-        #update_avg(hash)
         set(stat_key, JSON.generate(hash))
       end
 
@@ -86,28 +80,17 @@ module Tabs
 
       def increment(hash, value)
         hash["count"] += 1
-        hash["sum"] += value.to_f
+        hash["sum"] += value
       end
 
       def decrement(hash, value)
         hash["count"] -= 1
-        hash["sum"] -= value.to_f
+         hash["sum"] -= value
       end
-
-      def update_min(hash, value)
-        hash["min"] = value.to_f if hash["min"].nil? || value.to_f < hash["min"]
-      end
-
-      def update_max(hash, value)
-        hash["max"] = value.to_f if hash["max"].nil? || value.to_f > hash["max"]
-      end
-
-      def update_avg(hash)
-        hash["avg"] = hash["sum"].to_f / hash["count"]
       end
 
       def default_value(nil_value=nil)
-        { "count" => 0, "min" => nil_value, "max" => nil_value, "sum" => 0.0, "avg" => 0.0 }
+        { "count" => 0, "sum" => 0}
       end
 
     end

@@ -19,7 +19,7 @@ describe Tabs::Resolution do
         Timecop.freeze(Time.now)
 
         Tabs.increment_counter("foo")
-        expect(Tabs.get_stats("foo", (Time.now - 5.seconds..Time.now), :seconds).values.size).to eq(6)
+        expect(Tabs.get_counter_stats("foo", (Time.now - 5.seconds..Time.now), :seconds).values.size).to eq(6)
       end
 
       it "raises an error when method not implemented" do
