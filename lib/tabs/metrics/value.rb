@@ -20,6 +20,16 @@ module Tabs
         true
       end
 
+      def delete(value, timestamp=Time.now)
+        timestamp.utc
+        Tabs::Resolution.all.each do |resolution|
+          store_key = storage_key(resolution, timestamp)
+          delete_values(store_key, value)
+          Tabs::Resolution.expire(resolution, store_key, timestamp)
+        end
+        true
+      end
+
       def stats(period, resolution)
         timestamps = timestamp_range period, resolution
         keys = timestamps.map do |timestamp|
@@ -59,6 +69,15 @@ module Tabs
         set(stat_key, JSON.generate(hash))
       end
 
+      def delete_values(stat_key, value)
+        hash = get_current_hash(stat_key)
+        decrement(hash, value)
+        #update_min(hash, value)
+        #update_max(hash, value)
+        #update_avg(hash)
+        set(stat_key, JSON.generate(hash))
+      end
+
       def get_current_hash(stat_key)
         hash = get(stat_key)
         return JSON.parse(hash) if hash
@@ -68,6 +87,11 @@ module Tabs
       def increment(hash, value)
         hash["count"] += 1
         hash["sum"] += value.to_f
+      end
+
+      def decrement(hash, value)
+        hash["count"] -= 1
+        hash["sum"] -= value.to_f
       end
 
       def update_min(hash, value)

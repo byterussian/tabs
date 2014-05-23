@@ -28,6 +28,30 @@ describe Tabs::Metrics::Value do
 
   end
 
+  describe ".delete" do
+
+    before { Timecop.freeze(now) }
+
+    it "sets the expected values for the period" do
+      metric.record(17)
+      metric.record(42)
+      metric.delete(42)
+      time = Time.utc(now.year, now.month, now.day, now.hour)
+      stats = metric.stats(((now - 2.hours)..(now + 4.hours)), :hour)
+      expect(stats).to include({ "timestamp"=>time, "count"=>1, "min"=>17, "max"=>42, "sum"=>17, "avg"=>29.5})
+    end
+
+    it "applys the value to the specified timestamp if one is supplied" do
+      time = Time.utc(now.year, now.month, now.day, now.hour) - 2.hours
+      metric.record(42, time)
+      metric.delete(42, time)
+      metric.record(17, time)
+      stats = metric.stats(((now - 3.hours)..now), :hour)
+      expect(stats).to include({ "timestamp"=>time, "count"=>1, "min"=>17, "max"=>42, "sum"=>17, "avg"=>17})
+    end
+
+  end
+
   describe ".stats" do
 
     before do
