@@ -34,6 +34,12 @@ module Tabs
     get_metric(key).record(value, timestamp)
   end
 
+  def delete_value(key, value, timestamp=Time.now)
+    create_metric(key, "value") unless metric_exists?(key)
+    raise MetricTypeMismatchError.new("Only value metrics can record a value") unless metric_type(key) == "value"
+    get_metric(key).delete(value, timestamp)
+  end
+
   def start_task(key, token, timestamp=Time.now)
     create_metric(key, "task")
     raise MetricTypeMismatchError.new("Only task metrics can start a task") unless metric_type(key) == "task"
