@@ -76,8 +76,14 @@ module Tabs
     get_metric(key).total
   end
 
-  def get_stats(key, period, resolution)
-    raise UnknownMetricError.new("Unknown metric: #{key}") unless metric_exists?(key)
+  def get_value_stats(key, period, resolution)
+    create_metric(key, "value") unless metric_exists?(key)
+    metric = get_metric(key)
+    metric.stats(period, resolution)
+  end
+
+   def get_counter_stats(key, period, resolution)
+    create_metric(key, "counter") unless metric_exists?(key)
     metric = get_metric(key)
     metric.stats(period, resolution)
   end
