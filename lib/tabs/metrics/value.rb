@@ -84,7 +84,8 @@ module Tabs
       end
 
       def decrement(hash, value)
-        hash["count"] -= 1
+        if  (hash["sum"] - value) >= 0 || Tabs::Config.negative_metric
+         hash["count"] -= 1
          hash["sum"] -= value
       end
       end
